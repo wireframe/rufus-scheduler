@@ -11,7 +11,8 @@ $:.unshift(File.dirname(__FILE__) + '/../lib')
 
 require 'test/unit'
 require 'rufus/scheduler'
-
+require 'rubygems'
+require 'activesupport'
 
 #
 # testing otime and the scheduler
@@ -317,6 +318,30 @@ class Scheduler0Test < Test::Unit::TestCase
     end
 
     assert_not_nil e, "exception not caught"
+  end
+
+  def test_scheduler_in_accepts_fix_num
+    $var = nil
+
+    scheduler = Rufus::Scheduler.new
+    scheduler.start
+
+    sid = scheduler.in(1.second) do
+      $var = "ok..1"
+    end
+
+    assert \
+      sid,
+      "scheduler_1 did not return a job id"
+
+    assert \
+      (not $var),
+      "scheduler_1 is blocking but should not"
+
+    sleep 2
+    scheduler.stop
+
+    assert "ok..1", $var
   end
 
   protected
